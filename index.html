@@ -3,40 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siatka 3x3</title>
+    <title>Prostokąt i Kółko z Grawitacją</title>
     <style>
-        .siatka {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
-            width: 300px;
-            height: 300px;
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
         }
 
-        .siatka div {
-            background-color: pink;
-            border: 1px solid #d47e9e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #rectangle {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background-color: blue;
+        }
+
+        #circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: green;
+            border-radius: 50%;
+        }
+
+        .block {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background-color: red;
+            margin: 5px;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
             font-size: 20px;
+            color: black;
         }
     </style>
 </head>
 <body>
+    <div id="rectangle"></div>
+    <div id="circle"></div>
+    <div id="score">Zniszczone bloczki: 0</div>
 
-    <div class="siatka">
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
-        <div>6</div>
-        <div>7</div>
-        <div>8</div>
-        <div>9</div>
-    </div>
+    <script>
+        const rectangle = document.getElementById('rectangle');
+        const circle = document.getElementById('circle');
+        const scoreDisplay = document.getElementById('score');
 
+        const verticalPercentage = 75; // Prostokąt na 75% wysokości strony
+        const gravity = 0.5; // Stała grawitacji (zmniejsza prędkość kółka)
+        const bounciness = -24; // Stała odbicia (ustawia prędkość kółka po kolizji)
+
+        let rectWidth = rectangle.offsetWidth;
+        let rectHeight = rectangle.offsetHeight;
+
+        // Pozycja kółka
+        let circleX = window.innerWidth / 2;
+        let circleY = window.innerHeight / 2;
+        let circleVelocityX = 0; // Początkowa prędkość w poziomie
+        let circleVelocityY = 0; // Początkowa prędkość w pionie
+
+        // Stała pozycja Y prostokąta
+        const verticalPosition = (window.innerHeight * verticalPercentage) / 100;
+
+        // Ustawienie prostokąta na środku poziomo i na 75% wysokości
+        rectangle.style.left = `${(window.innerWidth - rectWidth) / 2}px`;
+        rectangle.style.top = `${verticalPosition - rectHeight / 2}px`;
+
+        // Tworzenie bloczków
+        const blocks = [];
+        const blockWidth = 60;
+        const blockHeight = 30;
+        const blockRows = 3;
+        const blockColumns = Math.floor(window.innerWidth / (blockWidth + 5));
+
+        let destroyedBlocks = 0;
+
+        // Funkcja do generowania bloczków
+        function createBlocks() {
+            for (let row = 0; row < blockRows; row++) {
+                for (let col = 0; col < blockColumns; col++) {
+                    const block = document.createElement('div');
+                    block.classList.add('block');
+                    // Obniżenie bloczków o 100 pikseli (zmiana wartości 20px)
+                    block.style.left = `${col * (blockWidth + 5) + 20}px`;
+                    block.style.top = `${row * (blockHeight + 5) + 100}px`;
+                    document.body.appendChild(block);
+                    blocks.push({ element: block, destroyed: false });
+                }
+            }
+        }
+
+        // Funkcja do aktualizacji pozycji kółka
+        function updateCircle() {
+            // Grawitacja - zwiększamy prędkość kółka w każdej klatce (kółko spada)
+            circleVelocityY += gravity;
+
+            // Nowa pozycja kółka
+            circleY += circleVelocityY;
+            circleX += circleVelocityX;
+
+            // Sprawdzanie kolizji z prostokątem
+            if (circleY + 50 >= verticalPosition - rectHeight / 2 && circleY <= verticalPosition + rectHeight / 2) {
+                if (circleX + 25 > rectangle.offsetLeft && circleX - 25 < rectangle.offsetLeft + rectWidth) {
+                    // Obliczanie kąta odbicia
+                    let angle = (circleX + 25 - rectangle.offsetLeft - rectWidth / 2) / (rectWidth / 2);
+                    
+                    // Zmiana kierunku prędkości X w zależności od kąta
+                    circleVelocityX = angle * Math.abs(circleVelocityY) * 0.8;  // Wpływ prędkości Y na X
+                    circleVelocityY = bounciness; // Prędkość Y po odbiciu
+                }
+            }
+
+            // Sprawdzanie kolizji z bloczkami
+            blocks.forEach(block => {
+                if (!block.destroyed) {
+                    const blockRect = block.element.getBoundingClientRect();
+                    if (circleX + 25 > blockRect.left && circleX - 25 < blockRect.right && circleY + 25 > blockRect.top && circleY - 25 < blockRect.bottom) {
+                        block.destroyed = true;
+                        block.element.style.display = 'none'; // Ukrycie zniszczonego bloczka
+                        destroyedBlocks++;
+
+                        // Wykonaj kolizję z bloczkiem (odbicie)
+                        if (circleX > blockRect.left && circleX < blockRect.right) {
+                            // Odbicie pionowe
+                            circleVelocityY = -circleVelocityY;
+                        } else {
+                            // Odbicie poziome
+                            circleVelocityX = -circleVelocityX;
+                        }
+
+                        scoreDisplay.innerText = `Zniszczone bloczki: ${destroyedBlocks}`;
+                    }
+                }
+            });
+
+            // Sprawdzanie kolizji z sufitem
+            if (circleY - 25 <= 0) {
+                circleVelocityY = -circleVelocityY; // Odbicie od sufitu
+            }
+
+            // Sprawdzanie kolizji z lewą i prawą ścianą
+            if (circleX - 25 <= 0 || circleX + 25 >= window.innerWidth) {
+                circleVelocityX = -circleVelocityX; // Odbicie od ściany
+            }
+
+            // Jeśli kółko spada poniżej ekranu, resetujemy jego pozycję
+            if (circleY > window.innerHeight) {
+                circleY = window.innerHeight / 2;
+                circleVelocityX = 0;
+                circleVelocityY = 0;
+            }
+
+            // Ustawienie pozycji kółka
+            circle.style.left = `${circleX - 25}px`;
+            circle.style.top = `${circleY - 25}px`;
+
+            requestAnimationFrame(updateCircle); // Animacja w pętli
+        }
+
+        // Funkcja do śledzenia pozycji myszy i prostokąta
+        document.addEventListener('mousemove', (e) => {
+            // Ustawienie prostokąta na poziomie X myszy
+            rectangle.style.left = `${e.clientX - rectWidth / 2}px`;
+        });
+
+        // Rozpoczęcie animacji
+        createBlocks(); // Tworzenie bloczków
+        updateCircle(); // Rozpoczęcie animacji
+    </script>
 </body>
 </html>
