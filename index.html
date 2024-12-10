@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Przykładowa Strona</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        nav {
+            text-align: center;
+            margin-top: 10px;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        section {
+            padding: 20px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Przyciski */
+        .button {
+            background-color: #4CAF50; /* Zielony kolor */
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        /* Efekt powiększenia po najechaniu */
+        .button:hover {
+            transform: scale(1.1); /* Powiększa przycisk o 10% */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Witaj na mojej stronie!</h1>
+    </header>
+    
+    <nav>
+        <a href="#home">Strona główna</a>
+        <a href="#about">O mnie</a>
+        <a href="#contact">Kontakt</a>
+    </nav>
+    
+    <section id="home">
+        <h2>Strona główna</h2>
+        <p>To jest przykładowa strona internetowa napisana w HTML.</p>
+        <button class="button">Przycisk Strona Główna</button>
+    </section>
+    
+    <section id="about">
+        <h2>O mnie</h2>
+        <p>Tu znajduje się sekcja o mnie. Możesz dodać kilka informacji o sobie.</p>
+        <button class="button">Przycisk O Mnie</button>
+    </section>
+    
+    <section id="contact">
+        <h2>Kontakt</h2>
+        <p>Możesz skontaktować się ze mną przez e-mail: <a href="mailto:example@example.com">example@example.com</a></p>
+        <button class="button">Przycisk Kontakt</button>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Przykładowa Strona</p>
+    </footer>
+</body>
+</html>
