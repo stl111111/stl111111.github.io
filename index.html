@@ -52,7 +52,7 @@
     <div id="output"></div>
     <div class="command">
       <span class="prompt">></span>
-      <input type="text" id="input" class="input" placeholder="Wpisz komendę..." autofocus />
+      <input type="text" id="input" class="input" autofocus />
     </div>
   </div>
 
@@ -67,7 +67,7 @@
     const commands = {
       "help": "Dostępne komendy: help, clear, echo, date, version, about",
       "clear": () => {
-        terminalOutput.innerHTML = '';
+        terminalOutput.innerHTML = ''; // Tylko czyszczenie zawartości, brak zwróconej wartości
       },
       "echo": (args) => {
         return args.join(' ');
@@ -114,16 +114,18 @@
       let outputText;
       if (commandFunction) {
         if (typeof commandFunction === "function") {
-          outputText = commandFunction(args);
+          outputText = commandFunction(args); // Wykonanie funkcji komendy
         } else {
-          outputText = commandFunction;
+          outputText = commandFunction; // Komenda zwraca tekst
         }
       } else {
         outputText = `Nieznana komenda: ${command}`;
       }
 
-      terminalOutput.innerHTML += `<div class="output">${outputText}</div>`;
-      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+      if (outputText !== undefined) {
+        terminalOutput.innerHTML += `<div class="output">${outputText}</div>`;
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+      }
     }
   </script>
 </body>
