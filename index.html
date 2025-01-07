@@ -65,7 +65,7 @@
 
     // Komendy terminala
     const commands = {
-      "help": "Dostępne komendy: help, clear, echo, date, version",
+      "help": "Dostępne komendy: help, clear, echo, date, version, about",
       "clear": () => {
         terminalOutput.innerHTML = '';
       },
@@ -77,6 +77,20 @@
       },
       "version": () => {
         return `Wersja terminala: ${version_const}`;
+      },
+      "about": (args) => {
+        if (args.length === 0) {
+          return "Proszę podać parametr: 'software' lub 'company'.";
+        }
+
+        const [param] = args;
+        if (param === "software") {
+          return "Terminal v1.0.0 - Oprogramowanie do symulacji terminala w przeglądarce.";
+        } else if (param === "company") {
+          return "Firma: OpenAI - Twórca technologii sztucznej inteligencji.";
+        } else {
+          return `Nieznany parametr: ${param}. Dostępne opcje: 'software', 'company'.`;
+        }
       }
     };
 
@@ -93,6 +107,7 @@
 
     // Funkcja obsługująca komendy
     function handleCommand(commandString) {
+      // Podział komendy na nazwę komendy i argumenty
       const [command, ...args] = commandString.split(" ");
       const commandFunction = commands[command];
       
